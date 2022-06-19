@@ -1,7 +1,10 @@
 let AmountCards = 0;
+let AmountClicks = 0;
 const ArrayPictures = ["bobrossparrot", "bobrossparrot", "explodyparrot", "explodyparrot", "fiestaparrot", "fiestaparrot", "metalparrot", "metalparrot", "revertitparrot", "revertitparrot", "tripletsparrot", "tripletsparrot", "unicornparrot", "unicornparrot"];
 let NewArrayPictures = [];
 let ArrayPicturesShuffled = [];
+let click1;
+let click2;
 StartGame();
 
 function StartGame() {
@@ -27,8 +30,46 @@ function StartGame() {
 }
 
 function RotateCard(elemento) {
-    elemento.querySelector(".FrontFace").classList.toggle("Rotate-front-face");
-    elemento.querySelector(".BackFace").classList.toggle("Rotate-back-face");
+    AmountClicks += 1;
+    elemento.querySelector(".FrontFace").classList.add("Rotate-front-face");
+    elemento.querySelector(".BackFace").classList.add("Rotate-back-face");
+
+    if (click1 === undefined) {
+        click1 = elemento.querySelector(".BackFace");
+    } else {
+        click2 = elemento.querySelector(".BackFace");
+    }
+
+
+    if (click2 !== undefined) {
+        
+        if (click1.src == click2.src) {
+            click1.parentNode.setAttribute("onclick", "null");
+            click2.parentNode.setAttribute("onclick", "null");
+            click1 = undefined;
+            click2 = undefined;
+        } else {
+            setTimeout(() => {
+                click1.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
+                click1.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
+                click2.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
+                click2.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
+                click1 = undefined;
+                click2 = undefined;
+            }, 1000);
+        }
+        FinishGame();
+    }
+}
+
+function FinishGame() {
+    let rotateAll = document.querySelectorAll(".Rotate-front-face").length;
+    console.log(rotateAll);
+    if (rotateAll === Number(AmountCards)) {
+        setTimeout(() => {
+            alert(`"Você ganhou em ${AmountClicks} jogadas!"`);
+        }, 1000);
+    }
 }
 
 function shuffleArray(arr) {
