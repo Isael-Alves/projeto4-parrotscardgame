@@ -5,17 +5,19 @@ let NewArrayPictures = [];
 let ArrayPicturesShuffled = [];
 let click1;
 let click2;
+let timer = 0;
+let Clock;
 StartGame();
 
 function StartGame() {
     AmountCards = prompt("Com quantas cartas vc quer jogar?");
-    for (i = 0; i < AmountCards; i++) {
+    for (let i = 0; i < AmountCards; i++) {
         NewArrayPictures.push(ArrayPictures[i]);
     }
 
     if (AmountCards > 3 && AmountCards < 15 && AmountCards % 2 === 0) {
         shuffleArray(NewArrayPictures);
-        for (i = 0; i < AmountCards; i++) {
+        for (let i = 0; i < AmountCards; i++) {
             document.querySelector("ul").innerHTML +=
                 `<li onclick = "RotateCard(this)">
                 <img class="FrontFace" src="/img/front.png" alt="">
@@ -30,35 +32,41 @@ function StartGame() {
 }
 
 function RotateCard(elemento) {
-    AmountClicks += 1;
-    elemento.querySelector(".FrontFace").classList.add("Rotate-front-face");
-    elemento.querySelector(".BackFace").classList.add("Rotate-back-face");
-
-    if (click1 === undefined) {
-        click1 = elemento.querySelector(".BackFace");
-    } else {
-        click2 = elemento.querySelector(".BackFace");
+    if (click1 === undefined && AmountClicks === 0) {
+        Timer();
     }
 
+    if (click1 === undefined || click2 === undefined) {
+        AmountClicks += 1;
+        elemento.querySelector(".FrontFace").classList.add("Rotate-front-face");
+        elemento.querySelector(".BackFace").classList.add("Rotate-back-face");
 
-    if (click2 !== undefined) {
-        
-        if (click1.src == click2.src) {
-            click1.parentNode.setAttribute("onclick", "null");
-            click2.parentNode.setAttribute("onclick", "null");
-            click1 = undefined;
-            click2 = undefined;
+        if (click1 === undefined) {
+            click1 = elemento.querySelector(".BackFace");
         } else {
-            setTimeout(() => {
-                click1.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
-                click1.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
-                click2.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
-                click2.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
+            click2 = elemento.querySelector(".BackFace");
+        }
+
+
+        if (click2 !== undefined) {
+
+            if (click1.src == click2.src) {
+                click1.parentNode.setAttribute("onclick", "null");
+                click2.parentNode.setAttribute("onclick", "null");
                 click1 = undefined;
                 click2 = undefined;
-            }, 1000);
+            } else {
+                setTimeout(() => {
+                    click1.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
+                    click1.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
+                    click2.parentNode.querySelector(".FrontFace").classList.remove("Rotate-front-face");
+                    click2.parentNode.querySelector(".BackFace").classList.remove("Rotate-back-face");
+                    click1 = undefined;
+                    click2 = undefined;
+                }, 1000);
+            }
+            FinishGame();
         }
-        FinishGame();
     }
 }
 
@@ -66,10 +74,18 @@ function FinishGame() {
     let rotateAll = document.querySelectorAll(".Rotate-front-face").length;
     console.log(rotateAll);
     if (rotateAll === Number(AmountCards)) {
+        clearInterval(Clock);
         setTimeout(() => {
-            alert(`"Você ganhou em ${AmountClicks} jogadas!"`);
+            alert(`"Você ganhou em ${AmountClicks} jogadas e em ${timer} segundos!"`);
         }, 1000);
     }
+}
+
+function Timer() {
+    Clock = setInterval(function () {
+        timer++;
+        document.querySelector(".Time p").innerHTML = timer;
+    }, 1000);
 }
 
 function shuffleArray(arr) {
